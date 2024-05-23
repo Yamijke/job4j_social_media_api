@@ -49,4 +49,16 @@ public class PostService implements CrudService<Post, Long> {
     public List<Post> findPosts(Pageable pageable) {
         return postRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
+
+    public boolean updateTitleAndContext(String title, String context, Long id) {
+        return postRepository.updateTitleAndContext(title, context, id) > 0;
+    }
+
+    public void deleteImageUrl(Long id) {
+        postRepository.deleteImageUrl(id);
+    }
+
+    public List<Post> findAllPostsOfSubscribers(Long userId, Pageable page) {
+        return postRepository.findAllPostsOfSubscribers(userId, page);
+    }
 }

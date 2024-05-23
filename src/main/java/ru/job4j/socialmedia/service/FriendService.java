@@ -2,6 +2,7 @@ package ru.job4j.socialmedia.service;
 
 import org.springframework.stereotype.Service;
 import ru.job4j.socialmedia.model.Friend;
+import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.repository.FriendRepository;
 
 import java.util.List;
@@ -38,5 +39,9 @@ public class FriendService implements CrudService<Friend, Long> {
     @Override
     public void deleteById(Long aLong) {
         friendRepository.deleteById(aLong);
+    }
+
+    public List<User> findAllUserFriends(Long id) {
+        return friendRepository.findAllUserFriends(id);
     }
 }

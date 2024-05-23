@@ -2,6 +2,7 @@ package ru.job4j.socialmedia.service;
 
 import org.springframework.stereotype.Service;
 import ru.job4j.socialmedia.model.Sub;
+import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.repository.SubRepository;
 
 import java.util.List;
@@ -38,5 +39,9 @@ public class SubService implements CrudService<Sub, Long> {
     @Override
     public void deleteById(Long aLong) {
         subRepository.deleteById(aLong);
+    }
+
+    List<User> findAllSubscribersByUser(Long id) {
+        return subRepository.findAllUserSubscribers(id);
     }
 }

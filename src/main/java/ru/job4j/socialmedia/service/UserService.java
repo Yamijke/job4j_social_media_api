@@ -39,4 +39,8 @@ public class UserService implements CrudService<User, Long> {
     public void deleteById(Long aLong) {
         userRepository.deleteById(aLong);
     }
+
+    public Optional<User> findByLoginAndPassword(String login, String password) {
+        return userRepository.findByLoginAndPassword(login, password);
+    }
 }

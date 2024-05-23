@@ -22,8 +22,8 @@ public class Post {
 
     private String title;
     private String context;
-    private String image_url;
+    private String imageUrl;
 
     @Column(name = "created_at", updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 }

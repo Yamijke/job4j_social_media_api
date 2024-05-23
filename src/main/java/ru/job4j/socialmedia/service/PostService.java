@@ -3,7 +3,9 @@ package ru.job4j.socialmedia.service;
 import org.springframework.stereotype.Service;
 import ru.job4j.socialmedia.model.Post;
 import ru.job4j.socialmedia.repository.PostRepository;
+import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,5 +40,13 @@ public class PostService implements CrudService<Post, Long> {
     @Override
     public void deleteById(Long aLong) {
         postRepository.deleteById(aLong);
+    }
+
+    public List<Post> findByCreatedAtBetween(LocalDateTime startAt, LocalDateTime finishAt) {
+        return postRepository.findByCreatedAtBetween(startAt, finishAt);
+    }
+
+    public List<Post> findPosts(Pageable pageable) {
+        return postRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 }

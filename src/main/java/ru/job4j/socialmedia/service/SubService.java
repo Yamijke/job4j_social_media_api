@@ -1,6 +1,7 @@
 package ru.job4j.socialmedia.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.job4j.socialmedia.model.Sub;
 import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.repository.SubRepository;
@@ -43,5 +44,19 @@ public class SubService implements CrudService<Sub, Long> {
 
     List<User> findAllSubscribersByUser(Long id) {
         return subRepository.findAllUserSubscribers(id);
+    }
+
+    @Transactional
+    public void subscribeUser(User subscriber, User subscribedTo) {
+        Sub subscription = new Sub();
+        subscription.setSubscriber(subscriber);
+        subscription.setSubscribed(subscribedTo);
+        subRepository.save(subscription);
+    }
+
+    @Transactional
+    public void unsubscribeUser(User subscriber, User subscribedTo) {
+        Optional<Sub> subscription = subRepository.findBySubscriberAndSubscribed(subscriber, subscribedTo);
+        subscription.ifPresent(subRepository::delete);
     }
 }

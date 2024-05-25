@@ -1,0 +1,1 @@
+CREATE TYPE friendship_status_enum AS ENUM ('pending', 'accepted', 'rejected');

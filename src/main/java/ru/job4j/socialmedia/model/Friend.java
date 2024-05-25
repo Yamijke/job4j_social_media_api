@@ -24,7 +24,8 @@ public class Friend {
     @JoinColumn(name = "friend_id")
     private User friend;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private FriendshipStatus status;
 
     @Column(name = "created_at", updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;

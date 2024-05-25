@@ -2,6 +2,6 @@ CREATE TABLE friends (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
     friend_id INT REFERENCES users(id) ON DELETE CASCADE,
-    status VARCHAR(10) CHECK (status IN ('pending', 'accepted', 'rejected')) NOT NULL,
+    friendship_status friendship_status_enum NOT NULL DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

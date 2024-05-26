@@ -20,7 +20,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
     @Modifying(clearAutomatically = true)
     @Query("""
             update Post post set post.title = :title,
-            set post.context = :context
+            post.context = :context
             where post.id = :id
             """
     )
@@ -38,7 +38,7 @@ public interface PostRepository extends CrudRepository<Post, Long> {
             select post from Post post
             where post.user.id in
             (select s.subscribed.id FROM Sub s where s.subscriber.id = :userId)
-            order by p.createdAt DESC
+            order by post.createdAt DESC
             """
     )
     List<Post> findAllPostsOfSubscribers(@Param("userId") Long userId, Pageable pageable);

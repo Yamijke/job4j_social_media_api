@@ -19,7 +19,7 @@ public interface SubRepository extends CrudRepository<Sub, Long> {
 
     @Query("""
             select s from Sub s
-            wheres.subscriber = :subscriber
+            where s.subscriber = :subscriber
             and s.subscribed = :subscribed
             """)
     Optional<Sub> findBySubscriberAndSubscribed(@Param("subscriber") User subscriber,

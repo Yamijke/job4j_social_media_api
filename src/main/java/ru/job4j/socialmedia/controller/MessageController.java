@@ -18,16 +18,15 @@ public class MessageController {
 
     @GetMapping
     public ResponseEntity<List<Message>> getAllMessages() {
-        List<Message> message = messageService.findAll();
-        return ResponseEntity.ok(message);
+        List<Message> messages = messageService.findAll();
+        return ResponseEntity.ok(messages);
     }
 
     @GetMapping("/{messageId}")
-    public ResponseEntity<Message> get(@PathVariable("messageId")
-                                    Long messageId) {
+    public ResponseEntity<Message> get(@PathVariable("messageId") Long messageId) {
         return messageService.findById(messageId)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PostMapping
@@ -44,21 +43,20 @@ public class MessageController {
     }
 
     @PutMapping
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Message> update(@RequestBody Message message) {
-        Message updateMessage = messageService.update(message);
-        return ResponseEntity.ok(updateMessage);
+        Message updatedMessage = messageService.update(message);
+        return ResponseEntity.ok(updatedMessage);
     }
 
     @PatchMapping
-    @ResponseStatus(HttpStatus.OK)
-    public void change(@RequestBody Message message) {
+    public ResponseEntity<Void> change(@RequestBody Message message) {
         messageService.update(message);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{messageId}")
     public ResponseEntity<Void> removeById(@PathVariable long messageId) {
         messageService.deleteById(messageId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

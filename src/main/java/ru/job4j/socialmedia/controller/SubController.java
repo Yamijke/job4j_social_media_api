@@ -23,11 +23,10 @@ public class SubController {
     }
 
     @GetMapping("/{subId}")
-    public ResponseEntity<Sub> get(@PathVariable("subId")
-                                    Long subId) {
+    public ResponseEntity<Sub> get(@PathVariable("subId") Long subId) {
         return subService.findById(subId)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PostMapping
@@ -50,15 +49,14 @@ public class SubController {
     }
 
     @PatchMapping
-    @ResponseStatus(HttpStatus.OK)
-    public void change(@RequestBody Sub sub) {
+    public ResponseEntity<Void> change(@RequestBody Sub sub) {
         subService.update(sub);
+        return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{postId}")
-    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{subId}")
     public ResponseEntity<Void> removeById(@PathVariable long subId) {
         subService.deleteById(subId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

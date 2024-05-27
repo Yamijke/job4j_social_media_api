@@ -23,11 +23,10 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> get(@PathVariable("userId")
-                                    Long userId) {
+    public ResponseEntity<User> get(@PathVariable("userId") Long userId) {
         return userService.findById(userId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .map(user -> ResponseEntity.status(HttpStatus.OK).body(user))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PostMapping
@@ -44,22 +43,20 @@ public class UserController {
     }
 
     @PutMapping
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<User> update(@RequestBody User user) {
         User updateUser = userService.update(user);
-        return ResponseEntity.ok(updateUser);
+        return ResponseEntity.status(HttpStatus.OK).body(updateUser);
     }
 
     @PatchMapping
-    @ResponseStatus(HttpStatus.OK)
-    public void change(@RequestBody User user) {
+    public ResponseEntity<Void> change(@RequestBody User user) {
         userService.update(user);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{userId}")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Void> removeById(@PathVariable long userId) {
         userService.deleteById(userId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

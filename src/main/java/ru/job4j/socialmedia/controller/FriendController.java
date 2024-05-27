@@ -23,11 +23,10 @@ public class FriendController {
     }
 
     @GetMapping("/{friendId}")
-    public ResponseEntity<Friend> get(@PathVariable("friendId")
-                                       Long friendId) {
+    public ResponseEntity<Friend> get(@PathVariable("friendId") Long friendId) {
         return friendService.findById(friendId)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PostMapping
@@ -44,21 +43,20 @@ public class FriendController {
     }
 
     @PutMapping
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Friend> update(@RequestBody Friend friend) {
-        Friend updateFriend = friendService.update(friend);
-        return ResponseEntity.ok(updateFriend);
+        Friend updatedFriend = friendService.update(friend);
+        return ResponseEntity.ok(updatedFriend);
     }
 
     @PatchMapping
-    @ResponseStatus(HttpStatus.OK)
-    public void change(@RequestBody Friend friend) {
+    public ResponseEntity<Void> change(@RequestBody Friend friend) {
         friendService.update(friend);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{friendId}")
     public ResponseEntity<Void> removeById(@PathVariable long friendId) {
         friendService.deleteById(friendId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

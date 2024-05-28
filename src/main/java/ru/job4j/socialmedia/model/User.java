@@ -13,7 +13,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private long id;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
     private String name;
     private String password;
 }

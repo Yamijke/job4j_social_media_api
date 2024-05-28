@@ -2,20 +2,28 @@ package ru.job4j.socialmedia.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.job4j.socialmedia.dto.PostDTO;
+import ru.job4j.socialmedia.dto.UserDTO;
+import ru.job4j.socialmedia.dto.mapper.PostMapper;
 import ru.job4j.socialmedia.model.Post;
+import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.repository.PostRepository;
 import org.springframework.data.domain.Pageable;
+import ru.job4j.socialmedia.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService implements CrudService<Post, Long> {
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -86,5 +94,16 @@ public class PostService implements CrudService<Post, Long> {
 
     public List<Post> findAllPostsOfSubscribers(Long userId, Pageable page) {
         return postRepository.findAllPostsOfSubscribers(userId, page);
+    }
+
+    public List<UserDTO> getUsersWithPosts(List<Long> userIds) {
+        List<User> users = (List<User>) userRepository.findAllById(userIds);
+        return users.stream().map(user -> {
+            List<PostDTO> posts = postRepository.findAllPostsOfUser(user.getId())
+                    .stream()
+                    .map(PostMapper.INSTANCE::postToPostDTO)
+                    .collect(Collectors.toList());
+            return PostMapper.INSTANCE.userToUserDTOWithPosts(user, posts);
+        }).collect(Collectors.toList());
     }
 }

@@ -42,4 +42,12 @@ public interface PostRepository extends CrudRepository<Post, Long> {
             """
     )
     List<Post> findAllPostsOfSubscribers(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("""
+            select post from Post post
+            where post.user.id = :userId
+            order by post.createdAt DESC
+            """
+    )
+    List<Post> findAllPostsOfUser(@Param("userId") Long userId);
 }

@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ru.job4j.socialmedia.dto.UserDTO;
 import ru.job4j.socialmedia.model.Post;
 import ru.job4j.socialmedia.service.PostService;
 
@@ -58,5 +59,10 @@ public class PostController {
     public ResponseEntity<Void> removeById(@PathVariable long postId) {
         postService.deleteById(postId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/users")
+    public List<UserDTO> getUsersWithPosts(@RequestBody List<Long> userIds) {
+        return postService.getUsersWithPosts(userIds);
     }
 }

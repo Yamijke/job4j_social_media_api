@@ -1,5 +1,6 @@
 package ru.job4j.socialmedia.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> save(@RequestBody Post post) {
+    public ResponseEntity<Post> save(@Valid @RequestBody Post post) {
         postService.save(post);
         var uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -44,13 +45,13 @@ public class PostController {
     }
 
     @PutMapping
-    public ResponseEntity<Post> update(@RequestBody Post post) {
+    public ResponseEntity<Post> update(@Valid @RequestBody Post post) {
         Post updatedPost = postService.update(post);
         return ResponseEntity.ok(updatedPost);
     }
 
     @PatchMapping
-    public ResponseEntity<Void> change(@RequestBody Post post) {
+    public ResponseEntity<Void> change(@Valid @RequestBody Post post) {
         postService.update(post);
         return ResponseEntity.ok().build();
     }

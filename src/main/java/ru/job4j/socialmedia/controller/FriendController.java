@@ -1,5 +1,6 @@
 package ru.job4j.socialmedia.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class FriendController {
     }
 
     @PostMapping
-    public ResponseEntity<Friend> save(@RequestBody Friend friend) {
+    public ResponseEntity<Friend> save(@Valid @RequestBody Friend friend) {
         friendService.save(friend);
         var uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -43,13 +44,13 @@ public class FriendController {
     }
 
     @PutMapping
-    public ResponseEntity<Friend> update(@RequestBody Friend friend) {
+    public ResponseEntity<Friend> update(@Valid @RequestBody Friend friend) {
         Friend updatedFriend = friendService.update(friend);
         return ResponseEntity.ok(updatedFriend);
     }
 
     @PatchMapping
-    public ResponseEntity<Void> change(@RequestBody Friend friend) {
+    public ResponseEntity<Void> change(@Valid @RequestBody Friend friend) {
         friendService.update(friend);
         return ResponseEntity.ok().build();
     }

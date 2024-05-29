@@ -1,5 +1,6 @@
 package ru.job4j.socialmedia.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class MessageController {
     }
 
     @PostMapping
-    public ResponseEntity<Message> save(@RequestBody Message message) {
+    public ResponseEntity<Message> save(@Valid @RequestBody Message message) {
         messageService.save(message);
         var uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -43,13 +44,13 @@ public class MessageController {
     }
 
     @PutMapping
-    public ResponseEntity<Message> update(@RequestBody Message message) {
+    public ResponseEntity<Message> update(@Valid @RequestBody Message message) {
         Message updatedMessage = messageService.update(message);
         return ResponseEntity.ok(updatedMessage);
     }
 
     @PatchMapping
-    public ResponseEntity<Void> change(@RequestBody Message message) {
+    public ResponseEntity<Void> change(@Valid @RequestBody Message message) {
         messageService.update(message);
         return ResponseEntity.ok().build();
     }

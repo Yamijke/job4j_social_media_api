@@ -55,7 +55,6 @@ public class GlobalExceptionHandler {
         return new ValidationErrorResponse(violations);
     }
 
-
     @ExceptionHandler(value = { DataIntegrityViolationException.class })
     public void catchDataIntergrityViolationException(Exception e, HttpServletRequest request, HttpServletResponse response)
             throws IOException {

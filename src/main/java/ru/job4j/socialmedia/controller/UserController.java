@@ -10,10 +10,13 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.job4j.socialmedia.model.User;
 import ru.job4j.socialmedia.service.UserService;
+import ru.job4j.socialmedia.userdetails.UserDetailsImpl;
 
 import java.util.List;
 
@@ -27,11 +30,12 @@ public class UserController {
     @Operation(
             summary = "Retrieve all users",
             description = "Get a list of all users. The response is a list of User objects.",
-            tags = { "User", "get" })
+            tags = {"User", "get"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = User.class), mediaType = "application/json") }),
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = User.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "204", description = "No Content", content = @Content(schema = @Schema(hidden = true)))
     })
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.findAll();
@@ -41,10 +45,11 @@ public class UserController {
     @Operation(
             summary = "Retrieve a User by userId",
             description = "Get a User object by specifying its userId. The response is User object with userId, username and date of created.",
-            tags = { "User", "get" })
+            tags = {"User", "get"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = User.class), mediaType = "application/json") }),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = User.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @GetMapping("/{userId}")
     public ResponseEntity<User> get(@PathVariable("userId") Long userId) {
         return userService.findById(userId)
@@ -53,12 +58,26 @@ public class UserController {
     }
 
     @Operation(
+            summary = "Retrieve current authenticated user",
+            description = "Get the currently authenticated user details.",
+            tags = {"User", "get"})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = UserDetailsImpl.class), mediaType = "application/json")})
+    })
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/current")
+    public ResponseEntity<UserDetailsImpl> getCurrentUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(userDetails);
+    }
+
+    @Operation(
             summary = "Create a new User",
             description = "Save a new User object. The response is the created User object with a generated ID.",
-            tags = { "User", "post" })
+            tags = {"User", "post"})
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Created", content = { @Content(schema = @Schema(implementation = User.class), mediaType = "application/json") }),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "201", description = "Created", content = {@Content(schema = @Schema(implementation = User.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<User> save(@Valid @RequestBody User user) {
         userService.save(user);
@@ -75,11 +94,12 @@ public class UserController {
     @Operation(
             summary = "Update an existing User",
             description = "Update a User object. The response is the updated User object.",
-            tags = { "User", "put" })
+            tags = {"User", "put"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = User.class), mediaType = "application/json") }),
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = User.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<User> update(@Valid @RequestBody User user) {
         User updateUser = userService.update(user);
@@ -89,11 +109,12 @@ public class UserController {
     @Operation(
             summary = "Partially update an existing User",
             description = "Partially update a User object. The response indicates success with no content.",
-            tags = { "User", "patch" })
+            tags = {"User", "patch"})
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "No Content", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @PatchMapping
     public ResponseEntity<Void> change(@Valid @RequestBody User user) {
         userService.update(user);
@@ -103,10 +124,11 @@ public class UserController {
     @Operation(
             summary = "Delete a User by userId",
             description = "Delete a User object by specifying its userId. The response indicates success with no content.",
-            tags = { "User", "delete" })
+            tags = {"User", "delete"})
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "No Content", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> removeById(@PathVariable long userId) {
         userService.deleteById(userId);

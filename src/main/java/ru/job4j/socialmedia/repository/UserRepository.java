@@ -15,4 +15,10 @@ public interface UserRepository extends CrudRepository<User, Long> {
             where user.email = ?1 and user.password = ?2
             """)
     Optional<User> findByLoginAndPassword(@Param("email") String email, @Param("password") String password);
+
+    Optional<User> findByName(String name);
+
+    Boolean existsByName(String name);
+
+    Boolean existsByEmail(String email);
 }

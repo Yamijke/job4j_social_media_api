@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.job4j.socialmedia.dto.UserDTO;
@@ -28,11 +29,12 @@ public class PostController {
     @Operation(
             summary = "Retrieve all posts",
             description = "Get a list of all posts. The response is a list of Post objects.",
-            tags = { "Post", "get" })
+            tags = {"Post", "get"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = Post.class), mediaType = "application/json") }),
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = Post.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "204", description = "No Content", content = @Content(schema = @Schema(hidden = true)))
     })
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<Post>> getAllPosts() {
         List<Post> posts = postService.findAll();
@@ -42,10 +44,11 @@ public class PostController {
     @Operation(
             summary = "Retrieve a Post by postId",
             description = "Get a Post object by specifying its postId. The response is a Post object.",
-            tags = { "Post", "get" })
+            tags = {"Post", "get"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = Post.class), mediaType = "application/json") }),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = Post.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @GetMapping("/{postId}")
     public ResponseEntity<Post> get(@PathVariable("postId") Long postId) {
         return postService.findById(postId)
@@ -56,10 +59,11 @@ public class PostController {
     @Operation(
             summary = "Create a new Post",
             description = "Save a new Post object. The response is the created Post object with a generated ID.",
-            tags = { "Post", "post" })
+            tags = {"Post", "post"})
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Created", content = { @Content(schema = @Schema(implementation = Post.class), mediaType = "application/json") }),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "201", description = "Created", content = {@Content(schema = @Schema(implementation = Post.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Post> save(@Valid @RequestBody Post post) {
         postService.save(post);
@@ -76,11 +80,12 @@ public class PostController {
     @Operation(
             summary = "Update an existing Post",
             description = "Update a Post object. The response is the updated Post object.",
-            tags = { "Post", "put" })
+            tags = {"Post", "put"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = Post.class), mediaType = "application/json") }),
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = Post.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<Post> update(@Valid @RequestBody Post post) {
         Post updatedPost = postService.update(post);
@@ -90,11 +95,12 @@ public class PostController {
     @Operation(
             summary = "Partially update an existing Post",
             description = "Partially update a Post object. The response indicates success with no content.",
-            tags = { "Post", "patch" })
+            tags = {"Post", "patch"})
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "No Content", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @PatchMapping
     public ResponseEntity<Void> change(@Valid @RequestBody Post post) {
         postService.update(post);
@@ -104,10 +110,11 @@ public class PostController {
     @Operation(
             summary = "Delete a Post by postId",
             description = "Delete a Post object by specifying its postId. The response indicates success with no content.",
-            tags = { "Post", "delete" })
+            tags = {"Post", "delete"})
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "No Content", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> removeById(@PathVariable long postId) {
         postService.deleteById(postId);
@@ -117,10 +124,11 @@ public class PostController {
     @Operation(
             summary = "Retrieve users with posts by user IDs",
             description = "Get a list of users with their posts by specifying a list of user IDs. The response is a list of UserDTO objects.",
-            tags = { "User", "post" })
+            tags = {"User", "post"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = UserDTO.class), mediaType = "application/json") }),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = UserDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
     @PostMapping("/users")
     public List<UserDTO> getUsersWithPosts(@RequestBody List<Long> userIds) {
         return postService.getUsersWithPosts(userIds);

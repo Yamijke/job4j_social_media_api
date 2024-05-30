@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.job4j.socialmedia.model.Friend;
@@ -27,11 +28,12 @@ public class FriendController {
     @Operation(
             summary = "Retrieve all friends",
             description = "Get a list of all friends. The response is a list of Friend objects.",
-            tags = { "Friend", "get" })
+            tags = {"Friend", "get"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = Friend.class), mediaType = "application/json") }),
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = Friend.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "204", description = "No Content", content = @Content(schema = @Schema(hidden = true)))
     })
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<Friend>> getAllFriends() {
         List<Friend> friends = friendService.findAll();
@@ -41,10 +43,11 @@ public class FriendController {
     @Operation(
             summary = "Retrieve a Friend by friendId",
             description = "Get a Friend object by specifying its friendId. The response is a Friend object.",
-            tags = { "Friend", "get" })
+            tags = {"Friend", "get"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = Friend.class), mediaType = "application/json") }),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = Friend.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @GetMapping("/{friendId}")
     public ResponseEntity<Friend> get(@PathVariable("friendId") Long friendId) {
         return friendService.findById(friendId)
@@ -55,10 +58,11 @@ public class FriendController {
     @Operation(
             summary = "Create a new Friend",
             description = "Save a new Friend object. The response is the created Friend object with a generated ID.",
-            tags = { "Friend", "post" })
+            tags = {"Friend", "post"})
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Created", content = { @Content(schema = @Schema(implementation = Friend.class), mediaType = "application/json") }),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "201", description = "Created", content = {@Content(schema = @Schema(implementation = Friend.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Friend> save(@Valid @RequestBody Friend friend) {
         friendService.save(friend);
@@ -75,11 +79,12 @@ public class FriendController {
     @Operation(
             summary = "Update an existing Friend",
             description = "Update a Friend object. The response is the updated Friend object.",
-            tags = { "Friend", "put" })
+            tags = {"Friend", "put"})
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = { @Content(schema = @Schema(implementation = Friend.class), mediaType = "application/json") }),
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = Friend.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<Friend> update(@Valid @RequestBody Friend friend) {
         Friend updatedFriend = friendService.update(friend);
@@ -89,12 +94,13 @@ public class FriendController {
     @Operation(
             summary = "Partially update an existing Friend",
             description = "Partially update a Friend object. The response indicates success with no content.",
-            tags = { "Friend", "patch" })
+            tags = {"Friend", "patch"})
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "No Content", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
     @PatchMapping
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<Void> change(@Valid @RequestBody Friend friend) {
         friendService.update(friend);
         return ResponseEntity.ok().build();
@@ -103,10 +109,11 @@ public class FriendController {
     @Operation(
             summary = "Delete a Friend by friendId",
             description = "Delete a Friend object by specifying its friendId. The response indicates success with no content.",
-            tags = { "Friend", "delete" })
+            tags = {"Friend", "delete"})
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "No Content", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     @DeleteMapping("/{friendId}")
     public ResponseEntity<Void> removeById(@PathVariable long friendId) {
         friendService.deleteById(friendId);
